@@ -1135,8 +1135,16 @@
     btn.dataset.caption = caption;
     btn.setAttribute('aria-label', 'View certificate: ' + caption);
     btn.addEventListener('click', (e) => {
+      console.log('Cert item clicked:', { title: cert.title, full, caption });
       e.preventDefault();
       openCertLightbox(full, caption);
+      // Fallback: if lightbox doesn't show, open in new tab after 500ms
+      setTimeout(() => {
+        if (!certLightbox.classList.contains('open')) {
+          console.warn('Lightbox did not open; falling back to new tab');
+          window.open(full, '_blank');
+        }
+      }, 500);
     });
 
     // Render a preview: use <img> for images, <object> for PDFs
