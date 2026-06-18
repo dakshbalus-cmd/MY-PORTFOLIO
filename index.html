@@ -1075,10 +1075,11 @@
     console.log('openCertLightbox called', src, caption);
     certLightboxContent.innerHTML = '';
     certLightbox.classList.remove('open');
+    // Set display but clear opacity/transform so CSS .open class rules apply
     certLightbox.style.display = 'flex';
-    certLightbox.style.visibility = 'visible';
-    certLightbox.style.opacity = '0';
-    certLightbox.style.transform = 'scale(0.84)';
+    certLightbox.style.visibility = '';
+    certLightbox.style.opacity = '';
+    certLightbox.style.transform = '';
 
     const isPDF = String(src).toLowerCase().endsWith('.pdf');
     if (isPDF) {
