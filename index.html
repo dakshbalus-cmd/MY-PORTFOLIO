@@ -1,12 +1,1230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=dakshbalus-portfolio.html" />
-  <title>Portfolio Redirect</title>
-  <link rel="canonical" href="dakshbalus-portfolio.html" />
+  <!--
+    ═════════════════════════════════════════════════════════════════════════════
+    ENGINEERING PORTFOLIO — Dakshinamurthy Balusamy
+    ═════════════════════════════════════════════════════════════════════════════
+    
+    STRUCTURE OVERVIEW:
+    • Head: Meta tags, fonts, and CSS styling
+    • Navigation: Fixed header with links to portfolio sections
+    • Main Content: 7 sheets (Profile, Experience, Education, Skills, Publications, Projects, Contact)
+    • Certifications Strip: Scrolling carousel between sheets 1 and 2
+    • JavaScript: Navigation, animations, scroll tracking, certificate lightbox
+    
+    KEY CUSTOMIZATION AREAS:
+    1. Color scheme: CSS custom properties (--paper, --blueprint, --ink)
+    2. Contact info & links: In hero section and contact sheet
+    3. Experience, Education, Skills, Projects: Update content in respective sheets
+    4. Certifications: Add/remove from CERTIFICATIONS array in JavaScript
+    
+    ═════════════════════════════════════════════════════════════════════════════
+  -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dakshinamurthy Balusamy — Engineering Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════════════════════════════════ 
+     DESIGN SYSTEM: COLOR PALETTE & TYPOGRAPHY
+     ═════════════════════════════════════════════════════════════════
+     
+     COLORS (easily customizable):
+     • --paper: Main background (off-white)
+     • --ink: Dark text color (dark teal)
+     • --blueprint: Accent color (blue) — use this to brand
+     • --caution: Warning/highlight (mustard yellow)
+     • --rule: Borders and dividers
+     
+     FONTS:
+     • --font-display: Large headings (Space Grotesk)
+     • --font-body: Body text (IBM Plex Sans)
+     • --font-mono: Code and labels (IBM Plex Mono)
+     ════════════════════════════════════════════════════════════════ */
+  
+  :root{
+    /* ---- BACKGROUND & TEXT COLORS ---- */
+    --paper:#E7ECE6;              /* Main background */
+    --paper-deep:#DBE2D8;         /* Darker paper (unused, available) */
+    --paper-card:#EFF2EB;         /* Card/button backgrounds */
+    
+    /* ---- TEXT COLORS (darker = more contrast) ---- */
+    --ink:#1C2A2A;                /* Dark text (headings, primary) */
+    --ink-soft:#56635F;           /* Medium text (body copy) */
+    --ink-faint:#8B968F;          /* Light text (labels, footnotes) */
+    
+    /* ---- ACCENT & ACCENT COLORS ---- */
+    --blueprint:#2C5A86;          /* Primary accent (links, hover) — CHANGE THIS to rebrand */
+    --blueprint-soft:rgba(44,90,134,0.10); /* Light accent background */
+    --caution:#B9851C;            /* Alert/warning accent (orange) */
+    
+    /* ---- BORDERS & DIVIDERS ---- */
+    --rule:#B7C2B4;               /* Light borders */
+    --rule-strong:#8C9890;        /* Darker borders & grid lines */
+    
+    /* ---- TYPOGRAPHY ---- */
+    --font-display:'Space Grotesk', sans-serif;  /* Bold headings */
+    --font-body:'IBM Plex Sans', sans-serif;     /* Regular body text */
+    --font-mono:'IBM Plex Mono', monospace;      /* Code & labels */
+    
+    /* ---- LAYOUT ---- */
+    --nav-h:64px;                 /* Fixed nav height */
+    --frame:1px solid var(--rule); /* Reusable border style */
+  }
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     GLOBAL STYLES — Applied to all elements
+     ════════════════════════════════════════════════════════════════ */
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.6;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* Background grid pattern (optional visual effect) */
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background-image:
+      repeating-linear-gradient(to right, rgba(140,152,144,0.10) 0px, rgba(140,152,144,0.10) 1px, transparent 1px, transparent 64px),
+      repeating-linear-gradient(to bottom, rgba(140,152,144,0.10) 0px, rgba(140,152,144,0.10) 1px, transparent 1px, transparent 64px);
+  }
+
+  a{color:inherit;text-decoration:none;}
+  .mono{font-family:var(--font-mono);}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     NAVIGATION BAR — Fixed header at top
+     ════════════════════════════════════════════════════════════════ */
+  
+  .nav{
+    position:fixed; top:0; left:0; right:0; height:var(--nav-h);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 32px;
+    background:rgba(231,236,230,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:var(--frame);
+    z-index:60;
+  }
+  
+  /* Logo + name in nav */
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand svg{width:26px;height:26px;display:block;}
+  .brand-text{font-family:var(--font-mono); font-weight:600; letter-spacing:0.04em; font-size:14px;}
+  .brand-text span{color:var(--blueprint);} /* Highlight initials in accent color */
+
+  /* Horizontal navigation links */
+  .nav-links{display:flex; gap:22px; list-style:none;}
+  .nav-links a{
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:0.06em;
+    color:var(--ink-soft); text-transform:uppercase; position:relative; padding-bottom:4px;
+    transition:color 0.2s ease;
+  }
+  /* Underline animation on hover */
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:var(--blueprint);
+    transition:width 0.25s ease;
+  }
+  .nav-links a:hover, .nav-links a.active{color:var(--ink);}
+  .nav-links a:hover::after, .nav-links a.active::after{width:100%;}
+
+  /* Mobile hamburger menu button */
+  .nav-toggle{
+    display:none; width:34px; height:34px; border:var(--frame); background:transparent;
+    align-items:center; justify-content:center; cursor:pointer;
+  }
+  .nav-toggle span, .nav-toggle span::before, .nav-toggle span::after{
+    content:''; display:block; width:16px; height:1.5px; background:var(--ink); position:relative;
+  }
+  .nav-toggle span::before{content:''; position:absolute; top:-5px; width:16px; height:1.5px; background:var(--ink);}
+  .nav-toggle span::after{content:''; position:absolute; top:5px; width:16px; height:1.5px; background:var(--ink);}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     SHEET LAYOUT — Each major section uses this structure
+     (Profile, Experience, Education, Skills, Publications, Projects, Contact)
+     ════════════════════════════════════════════════════════════════ */
+  
+  main{position:relative; z-index:1; padding-top:var(--nav-h);}
+
+  /* Each "sheet" is a portfolio section with scroll-in animation */
+  .sheet{
+    padding:88px 32px 40px;
+    scroll-margin-top:var(--nav-h);
+    opacity:0; transform:translateY(18px);
+    transition:opacity 0.7s ease, transform 0.7s ease;
+  }
+  .sheet.in-view{opacity:1; transform:translateY(0);} /* Triggered by JS Intersection Observer */
+
+  /* Padding adjustments for cert strip between sheets */
+  #sheet-01{padding-bottom:15px;}
+  #sheet-02{padding-top:15px;}
+
+  /* White card container with border — used in every sheet */
+  .sheet-frame{
+    max-width:1120px; margin:0 auto;
+    border:var(--frame);
+    background:rgba(239,242,235,0.45);
+    padding:48px clamp(20px,4vw,56px) 56px;
+    position:relative;
+  }
+
+  /* Registration marks (corner decorations) */
+  .reg-mark{position:absolute; width:13px; height:13px; opacity:0.55;}
+  .reg-mark::before{content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:var(--rule-strong);}
+  .reg-mark::after{content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background:var(--rule-strong);}
+  .reg-mark.tl{top:-7px; left:-7px;}       /* top-left */
+  .reg-mark.tr{top:-7px; right:-7px;}      /* top-right */
+  .reg-mark.bl{bottom:-7px; left:-7px;}    /* bottom-left */
+  .reg-mark.br{bottom:-7px; right:-7px;}   /* bottom-right */
+
+  /* Large watermark number (01, 02, etc.) behind content */
+  .sheet-watermark{
+    position:absolute; top:8px; right:24px;
+    font-family:var(--font-display); font-weight:700; font-size:110px;
+    color:var(--ink); opacity:0.035; line-height:1; pointer-events:none; user-select:none;
+  }
+
+  /* Small uppercase label above headings */
+  .eyebrow{
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:0.12em;
+    color:var(--blueprint); text-transform:uppercase; margin-bottom:18px; display:inline-block;
+  }
+
+  /* Header with title, decorative elements, and tag */
+  .sheet-header{display:flex; align-items:center; gap:14px; margin-bottom:36px;}
+  .sheet-header .tick{width:9px; height:9px; border:1.5px solid var(--blueprint); transform:rotate(45deg); flex:0 0 auto;}
+  .sheet-header .line{flex:1; height:1px; background:var(--rule-strong);}
+  .sheet-header h2{font-family:var(--font-display); font-weight:600; font-size:clamp(22px,3vw,30px); white-space:nowrap; letter-spacing:-0.01em;}
+  .sheet-header .tag{font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); white-space:nowrap;}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     TYPOGRAPHY — Headings, body text, accents
+     ════════════════════════════════════════════════════════════════ */
+
+  h1{
+    font-family:var(--font-display); font-weight:600; font-size:clamp(34px,5.4vw,58px);
+    line-height:1.08; letter-spacing:-0.015em; max-width:14ch;
+  }
+  .accent{color:var(--blueprint);} /* Use on important text to highlight */
+
+  p{color:var(--ink-soft);}
+  .lede{font-size:17px; max-width:46ch; margin:22px 0 26px;} /* Intro paragraph */
+
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     HERO SECTION — Profile/landing section with image & contact info
+     ════════════════════════════════════════════════════════════════ */
+
+  .hero-grid{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;}
+  
+  .status-tag{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:12px;
+    border:var(--frame); padding:8px 14px; margin-bottom:26px; background:var(--paper-card);
+  }
+  .status-tag .dot{width:7px; height:7px; border-radius:50%; background:var(--caution);} /* Animated "available" indicator */
+
+  /* Contact info pills (email, phone, location, links) */
+  .contact-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .chip{
+    font-family:var(--font-mono); font-size:12px; border:var(--frame); padding:8px 13px;
+    background:var(--paper-card); transition:border-color 0.2s ease, color 0.2s ease;
+  }
+  .chip:hover{border-color:var(--blueprint); color:var(--blueprint);}
+
+  /* SVG illustration/diagram area */
+  .hero-art{position:relative;}
+  .hero-svg{width:100%; height:auto; display:block; overflow:visible;}
+  .hero-svg text{font-family:var(--font-mono);}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     SKILLS SECTION — Grouped skill chips by category
+     ════════════════════════════════════════════════════════════════ */
+
+  .skill-group{margin-bottom:30px;}
+  .skill-group:last-child{margin-bottom:0;}
+  .skill-group h3{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--ink-faint); margin-bottom:12px; font-weight:500;
+  }
+  .skill-chips{display:flex; flex-wrap:wrap; gap:9px;}
+  .skill-chip{
+    font-family:var(--font-mono); font-size:12.5px; padding:7px 12px; border:var(--frame);
+    background:var(--paper-card); color:var(--ink);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     PROJECTS SECTION — Grid of project cards with hover effect
+     ════════════════════════════════════════════════════════════════ */
+
+  .project-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+  .project-card{
+    border:var(--frame); padding:28px; background:var(--paper-card); position:relative;
+    transition:transform 0.25s ease, border-color 0.25s ease;
+  }
+  .project-card:hover{transform:translateY(-3px); border-color:var(--blueprint);}
+  .project-id{font-family:var(--font-mono); font-size:11px; color:var(--blueprint); letter-spacing:0.06em; margin-bottom:10px; display:block;}
+  .project-card h3{font-family:var(--font-display); font-size:19px; font-weight:600; margin-bottom:8px; line-height:1.3;}
+  .project-sub{font-size:13.5px; color:var(--ink-soft); margin-bottom:16px;}
+  .project-card ul{list-style:none; margin-bottom:18px;}
+  .project-card li{position:relative; padding-left:16px; font-size:13.5px; color:var(--ink); margin-bottom:8px;}
+  .project-card li::before{content:'—'; position:absolute; left:0; color:var(--ink-faint); font-size:12px;}
+  .tag-row{display:flex; flex-wrap:wrap; gap:6px;}
+  .tag{font-family:var(--font-mono); font-size:10.5px; color:var(--ink-soft); border:1px solid var(--rule); padding:3px 8px;}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     EXPERIENCE SECTION — Timeline of jobs with dates & descriptions
+     ════════════════════════════════════════════════════════════════ */
+
+  .exp-row{
+    display:grid; grid-template-columns:52px 1fr 150px; gap:18px;
+    padding:22px 0; border-top:1px solid var(--rule);
+  }
+  .exp-row:first-of-type{border-top:none;}
+  .exp-rev{font-family:var(--font-display); font-weight:700; font-size:20px; color:var(--blueprint);} /* Position letter (A, B, C) */
+  .exp-role{font-family:var(--font-display); font-weight:600; font-size:16.5px; margin-bottom:4px;}
+  .exp-org{font-family:var(--font-mono); font-size:12px; color:var(--ink-faint); margin-bottom:10px;}
+  .exp-desc{font-size:14px; color:var(--ink-soft); max-width:60ch;}
+  .exp-date{font-family:var(--font-mono); font-size:12px; color:var(--ink-faint); text-align:right; white-space:nowrap;}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     EDUCATION SECTION — 2-column grid of degree cards
+     ════════════════════════════════════════════════════════════════ */
+
+  .edu-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  .edu-card{border:var(--frame); padding:26px; background:var(--paper-card);}
+  .edu-card h3{font-family:var(--font-display); font-size:17px; font-weight:600; margin-bottom:6px;}
+  .edu-org{font-size:14px; color:var(--ink-soft); margin-bottom:14px;}
+  .edu-meta{display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint); border-top:1px dashed var(--rule); padding-top:12px; margin-top:4px;}
+  .edu-courses{margin-top:14px; display:flex; flex-wrap:wrap; gap:6px;}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     PUBLICATIONS SECTION — Journal articles & competitions
+     ════════════════════════════════════════════════════════════════ */
+
+  .pub-block{
+    display:block;
+    border-left:2px solid var(--blueprint);
+    padding:16px 0 16px 20px;
+    margin-bottom:32px;
+    transition:background 0.2s ease, border-color 0.2s ease;
+  }
+  .pub-block:hover,
+  .pub-block:focus-within{
+    background:rgba(44,90,134,0.05);
+    border-color:rgba(44,90,134,0.55);
+  }
+  .pub-block p{
+    margin:0 0 12px;
+    font-size:15px;
+    line-height:1.7;
+    max-width:60ch;
+  }
+  .pub-link{
+    color:var(--ink);
+    text-decoration:none;
+    display:inline-flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    line-height:1.6;
+  }
+  .pub-link:hover,
+  .pub-link:focus-visible{
+    color:var(--blueprint);
+    text-decoration:underline;
+  }
+  .pub-action{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 12px;
+    border-radius:999px;
+    background:rgba(44,90,134,0.12);
+    color:var(--blueprint);
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    white-space:nowrap;
+    border:1px solid transparent;
+    transition:background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+  .pub-link:hover .pub-action,
+  .pub-link:focus-visible .pub-action{
+    background:var(--blueprint-soft);
+    border-color:var(--blueprint);
+    transform:translateY(-1px);
+  }
+  .pub-meta{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint); margin-top:0;}
+  .ach-list{list-style:none;}
+  .ach-list li{display:grid; grid-template-columns:64px 1fr; gap:16px; padding:14px 0; border-top:1px solid var(--rule); font-size:14px; color:var(--ink-soft);}
+  .ach-list li:first-child{border-top:none;}
+  .ach-code{font-family:var(--font-mono); color:var(--blueprint); font-size:12.5px;}
+
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     CONTACT SECTION — Final call-to-action before footer
+     ════════════════════════════════════════════════════════════════ */
+
+  .contact-cta{text-align:left; max-width:640px;}
+  .contact-cta h2.big{font-family:var(--font-display); font-weight:600; font-size:clamp(28px,4vw,42px); margin-bottom:18px; letter-spacing:-0.01em;}
+  .contact-cta .lede{margin-bottom:30px;}
+  .footer-note{margin-top:60px; font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; border-top:1px dashed var(--rule); padding-top:18px;}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     CERTIFICATIONS STRIP — Horizontal scrolling carousel between sheets
+     ════════════════════════════════════════════════════════════════ */
+
+  .cert-strip{
+    position:relative; z-index:1;
+    padding:0 32px;
+    scroll-margin-top:var(--nav-h);
+  }
+  .cert-strip-frame{
+    max-width:1120px; margin:0 auto; position:relative;
+    border:var(--frame); background:var(--paper-card);
+    display:flex; align-items:stretch;
+  }
+  /* Vertical label on left side */
+  .cert-strip-label{
+    flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+    font-size:10.5px; letter-spacing:0.14em; color:var(--ink-faint); text-transform:uppercase;
+    writing-mode:vertical-rl; transform:rotate(180deg);
+    padding:10px 11px; border-right:1px dashed var(--rule);
+    white-space:nowrap;
+  }
+  /* Container for scrolling track */
+  .cert-track-wrap{
+    flex:1; min-height:170px; overflow-x:auto; position:relative; /* allow manual scrolling */
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+    touch-action: pan-y;
+  }
+  /* Fade gradient at edges of scroll track */
+  .cert-track-wrap::before, .cert-track-wrap::after{
+    content:''; position:absolute; top:0; bottom:0; width:36px; z-index:2; pointer-events:none;
+  }
+  .cert-track-wrap::before{left:0; background:linear-gradient(to right, var(--paper-card), transparent);}
+  .cert-track-wrap::after{right:0; background:linear-gradient(to left, var(--paper-card), transparent);}
+  /* Infinite looping animation of certificates */
+  .cert-track{
+    display:flex; align-items:center; gap:14px; height:100%; width:max-content;
+    padding:10px 16px; /* static, manually scrollable track */
+    cursor:grab;
+  }
+  .cert-track:active{cursor:grabbing;}
+
+  /* marquee animation removed to allow manual scrolling */
+
+  /* Individual certificate thumbnail */
+  .cert-item{
+    flex:0 0 auto; width:120px; min-height:170px; padding:0;
+    border:1px solid var(--rule); background:#fff; cursor:pointer; overflow:hidden;
+    position:relative; transition:border-color 0.2s ease, transform 0.2s ease;
+    display:grid; grid-template-rows:1fr auto; /* top area grows, label stays at bottom */
+  }
+  .cert-item:hover, .cert-item:focus-visible{border-color:var(--blueprint); transform:translateY(-2px);} 
+  /* Center the thumbnail within the available area; keep label fixed at bottom */
+  .cert-thumb{display:flex; align-items:center; justify-content:center; padding:8px; min-height:100px;}
+  .cert-thumb img, .cert-thumb object{max-width:100%; max-height:100%; object-fit:contain; display:block;}
+  .cert-item-name{
+    position:static; margin:0; background:transparent; color:var(--ink); font-family:var(--font-mono);
+    font-size:11px; padding:6px 4px; text-align:center;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-top:1px solid var(--rule);
+  }
+  .cert-item::after{
+    content:'+'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:16px; color:#fff; background:rgba(28,42,42,0.55);
+    opacity:0; transition:opacity 0.2s ease;
+    pointer-events:none;
+  }
+  .cert-item:hover::after, .cert-item:focus-visible::after{opacity:1;}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     CERTIFICATE LIGHTBOX — Full-screen modal for viewing certificates
+     ════════════════════════════════════════════════════════════════ */
+
+  .cert-lightbox{
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(28,42,42,0.92);
+    display:flex; visibility:hidden; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    padding:48px 24px;
+    opacity:0; pointer-events:none;
+    transform:scale(0.72) translateY(32px);
+    transition:opacity 1.0s cubic-bezier(0.16, 1, 0.3, 1), transform 1.0s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change:opacity, transform;
+  }
+  .cert-lightbox.open{visibility:visible; opacity:1; pointer-events:auto; transform:scale(1) translateY(0);}
+  .cert-lightbox img, .cert-lightbox object{max-width:min(90vw, 760px); max-height:74vh; width:auto; height:auto; background:#fff; border:6px solid #fff; box-shadow:0 18px 48px rgba(0,0,0,0.4); transform:scale(0.82) translateY(24px); opacity:0; transition:transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease 0.08s; transform-origin:center center; will-change:opacity, transform;}
+  .cert-lightbox.open img, .cert-lightbox.open object{transform:scale(1) translateY(0); opacity:1;}
+  .cert-lightbox-caption{font-size:12.5px; letter-spacing:0.05em; color:var(--paper); text-align:center;}
+  #certLightboxContent{display:flex; align-items:center; justify-content:center; width:100%;}
+  .cert-lightbox-close{position:absolute; top:22px; right:24px; width:40px; height:40px; border:1px solid rgba(231,236,230,0.4); background:transparent; color:var(--paper); font-size:22px; line-height:1; cursor:pointer; transition:border-color 0.2s ease;}
+  .cert-lightbox-close:hover{border-color:var(--paper);}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     TITLE BLOCK — Fixed metadata box in bottom-right corner
+     (Sheet number, doc #, revision, scale)
+     ════════════════════════════════════════════════════════════════ */
+
+  .title-block{
+    position:fixed; bottom:18px; right:18px; z-index:55;
+    background:rgba(231,236,230,0.95); border:var(--frame);
+    font-family:var(--font-mono); font-size:10.5px; line-height:1.55; color:var(--ink-soft);
+    padding:10px 14px; min-width:170px; backdrop-filter:blur(4px);
+  }
+  .title-block .tb-row{display:flex; justify-content:space-between; gap:10px;}
+  .title-block .tb-strong{color:var(--ink); font-weight:600;}
+
+  /* ══════════════════════════════════════════════════════════════════ 
+     RESPONSIVE — Tablet & mobile adjustments
+     ════════════════════════════════════════════════════════════════ */
+
+  @media (max-width: 860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-art{order:-1;} /* Image above text on tablet */
+    .project-grid{grid-template-columns:1fr;}
+    .edu-grid{grid-template-columns:1fr;}
+    .exp-row{grid-template-columns:36px 1fr; }
+    .exp-date{grid-column:2; text-align:left; margin-top:-6px;}
+    .sheet-watermark{font-size:70px;}
+  }
+
+  @media (max-width: 700px){
+    /* Mobile nav uses dropdown menu */
+    .nav-links{
+      position:absolute; top:var(--nav-h); left:0; right:0; background:var(--paper);
+      flex-direction:column; padding:18px 24px; border-bottom:var(--frame); gap:16px;
+      display:none;
+    }
+    .nav-links.open{display:flex;}
+    .nav-toggle{display:flex;} /* Show hamburger menu */
+    .title-block{min-width:0; font-size:10px; padding:8px 10px;}
+    .sheet{padding:72px 16px 24px;}
+    .sheet-frame{padding:36px 18px 40px;}
+    .cert-strip{padding:0 16px;}
+    .cert-strip-label{font-size:9.5px; padding:8px 8px;}
+    .cert-item{width:78px; height:46px;}
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce){
+    .sheet, html{transition:none !important;}
+    .sheet{opacity:1; transform:none;}
+    .cert-track{animation:none; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .cert-track-wrap{overflow-x:auto;}
+  }
+</style>
 </head>
 <body>
-  <p>Redirecting to <a href="dakshbalus-portfolio.html">portfolio page</a>...</p>
+
+<header class="nav">
+  <a class="brand" href="#sheet-01">
+    <svg viewBox="0 0 26 26" aria-hidden="true">
+      <circle cx="13" cy="13" r="11" fill="none" stroke="#2C5A86" stroke-width="1.4"/>
+      <line x1="13" y1="2" x2="13" y2="7" stroke="#2C5A86" stroke-width="1.4"/>
+      <line x1="13" y1="19" x2="13" y2="24" stroke="#2C5A86" stroke-width="1.4"/>
+      <line x1="2" y1="13" x2="7" y2="13" stroke="#2C5A86" stroke-width="1.4"/>
+      <line x1="19" y1="13" x2="24" y2="13" stroke="#2C5A86" stroke-width="1.4"/>
+      <circle cx="13" cy="13" r="2.4" fill="#2C5A86"/>
+    </svg>
+    <span class="brand-text">D.<span>BALUSAMY</span></span>
+  </a>
+  <nav>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#sheet-01">01 Profile</a></li>
+      <li><a href="#certStrip">Certifications</a></li>
+      <li><a href="#sheet-02">02 Experience</a></li>
+      <li><a href="#sheet-03">03 Education</a></li>
+      <li><a href="#sheet-04">04 Skills</a></li>
+      <li><a href="#sheet-05">05 Publications</a></li>
+      <li><a href="#sheet-06">06 Projects</a></li>
+      <li><a href="#sheet-07">07 Contact</a></li>
+    </ul>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span></span></button>
+</header>
+
+<main>
+
+  <!-- SHEET 01 : PROFILE -->
+  <section class="sheet" id="sheet-01">
+    <div class="sheet-frame">
+      <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+      <span class="sheet-watermark">01</span>
+      <p class="eyebrow mono">DAKSHINAMURTHY BALUSAMY</p>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Engineering systems from sketch to <span class="accent">validated simulation.</span></h1>
+          <p class="lede">M.S. graduate in Aerospace &amp; Mechanical Engineering (Saint Louis University, 2026) working across robotics, CFD/FEA, and control systems — with a published combustor study and a habit of carrying every project from CAD through validated results.</p>
+          <div class="status-tag"><span class="dot"></span> Open to full-time roles · Authorized to work in the U.S. (OPT)</div>
+          <div class="contact-row">
+            <a class="chip" href="mailto:daksh.balus@gmail.com">daksh.balus@gmail.com</a>
+            <span class="chip">+1 (557) 213-2921</span>
+            <span class="chip">St. Louis, MO</span>
+            <a class="chip" href="https://www.linkedin.com/in/dakshinamurthy-balusamy-9576a7210" target="_blank" rel="noopener noreferrer" id="linkedinLink">LinkedIn ↗</a>
+            <a class="chip" href="https://github.com/dakshbalus-cmd" target="_blank" rel="noopener noreferrer" id="githubLink">GitHub ↗</a>
+          </div>
+        </div>
+        <div class="hero-art">
+          <svg class="hero-svg" viewBox="0 0 600 460" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#2C5A86"/>
+              </marker>
+            </defs>
+
+            <g stroke="#8C9890" stroke-width="0.5" opacity="0.4">
+              <line x1="0" y1="115" x2="600" y2="115"/>
+              <line x1="0" y1="345" x2="600" y2="345"/>
+              <line x1="150" y1="0" x2="150" y2="460"/>
+              <line x1="450" y1="0" x2="450" y2="460"/>
+            </g>
+
+            <!-- control loop motif -->
+            <g>
+              <rect class="draw-path" x="34" y="38" width="42" height="30" fill="none" stroke="#2C5A86" stroke-width="1.4"/>
+              <text x="55" y="58" text-anchor="middle" font-size="12" fill="#1C2A2A">e</text>
+              <path class="draw-path" d="M76 53 H108" stroke="#2C5A86" stroke-width="1.3" fill="none" marker-end="url(#arrow)"/>
+              <rect class="draw-path" x="108" y="38" width="48" height="30" fill="none" stroke="#2C5A86" stroke-width="1.4"/>
+              <text x="132" y="58" text-anchor="middle" font-size="10.5" fill="#1C2A2A">G(s)</text>
+              <path class="draw-path" d="M156 53 H184 V104 H55 V68" stroke="#2C5A86" stroke-width="1.1" fill="none" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+              <text x="120" y="118" text-anchor="middle" font-size="9" letter-spacing="1" fill="#56635F">CONTROL LOOP</text>
+            </g>
+
+            <!-- orbit motif -->
+            <g>
+              <ellipse class="draw-path" cx="505" cy="78" rx="78" ry="34" fill="none" stroke="#2C5A86" stroke-width="1.2" stroke-dasharray="4 4" transform="rotate(-18 505 78)"/>
+              <rect x="558" y="46" width="8" height="8" fill="#B9851C" transform="rotate(-18 562 50)"/>
+              <path class="draw-path" d="M562 50 L562 95" stroke="#8C9890" stroke-width="1" stroke-dasharray="2 2"/>
+              <path class="draw-path" d="M552 100 L572 100 L562 88 Z" fill="none" stroke="#56635F" stroke-width="1.1"/>
+              <text x="562" y="118" text-anchor="middle" font-size="9" letter-spacing="0.5" fill="#56635F">DISKSAT ORBIT</text>
+            </g>
+
+            <!-- turbine blade motif -->
+            <g>
+              <path class="draw-path" d="M40 372 C70 350 110 350 128 374 C112 398 66 400 40 372 Z" fill="none" stroke="#2C5A86" stroke-width="1.3"/>
+              <path class="draw-path" d="M55 360 L72 388 M68 354 L88 392 M82 352 L102 390" stroke="#8C9890" stroke-width="0.9"/>
+              <text x="84" y="416" text-anchor="middle" font-size="9" letter-spacing="0.5" fill="#56635F">RIB-TURBULATED BLADE</text>
+            </g>
+
+            <!-- robotic arm (hero element) -->
+            <g>
+              <circle class="draw-path" cx="300" cy="402" r="7" fill="#EFF2EB" stroke="#2C5A86" stroke-width="1.6"/>
+              <path class="draw-path" d="M300 402 L242 308" stroke="#1C2A2A" stroke-width="2.2" fill="none"/>
+              <circle class="draw-path" cx="242" cy="308" r="6.5" fill="#EFF2EB" stroke="#2C5A86" stroke-width="1.6"/>
+              <path class="draw-path" d="M242 308 L356 230" stroke="#1C2A2A" stroke-width="2.2" fill="none"/>
+              <circle class="draw-path" cx="356" cy="230" r="6.5" fill="#EFF2EB" stroke="#2C5A86" stroke-width="1.6"/>
+              <path class="draw-path" d="M356 230 L312 150" stroke="#1C2A2A" stroke-width="2.2" fill="none"/>
+              <circle class="draw-path" cx="312" cy="150" r="5.5" fill="#EFF2EB" stroke="#2C5A86" stroke-width="1.6"/>
+              <path class="draw-path" d="M312 150 L296 128 M312 150 L330 130" stroke="#1C2A2A" stroke-width="1.8" fill="none"/>
+
+              <path class="draw-path" d="M268 296 A14 14 0 0 1 250 322" fill="none" stroke="#B9851C" stroke-width="1.1"/>
+              <text x="278" y="290" font-size="9.5" fill="#56635F">θ1</text>
+
+              <path class="draw-path" d="M242 308 L170 290" stroke="#8C9890" stroke-width="0.9" stroke-dasharray="2 2"/>
+              <text x="120" y="288" font-size="9.5" letter-spacing="0.5" fill="#56635F">JOINT 1</text>
+              <path class="draw-path" d="M356 230 L430 215" stroke="#8C9890" stroke-width="0.9" stroke-dasharray="2 2"/>
+              <text x="436" y="218" font-size="9.5" letter-spacing="0.5" fill="#56635F">JOINT 2</text>
+              <path class="draw-path" d="M312 150 L380 142" stroke="#8C9890" stroke-width="0.9" stroke-dasharray="2 2"/>
+              <text x="386" y="145" font-size="9.5" letter-spacing="0.5" fill="#56635F">END EFFECTOR</text>
+
+              <path class="draw-path" d="M242 432 V440 M300 432 V440" stroke="#8C9890" stroke-width="1"/>
+              <path class="draw-path" d="M242 436 H300" stroke="#8C9890" stroke-width="1" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+              <text x="271" y="452" text-anchor="middle" font-size="9.5" letter-spacing="0.5" fill="#56635F">REACH · 0.31 m</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS STRIP -->
+  <section class="cert-strip" id="certStrip" aria-label="Certifications">
+    <div class="cert-strip-frame">
+      <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+      <span class="cert-strip-label mono">CERTIFICATIONS</span>
+      <div class="cert-track-wrap">
+        <div class="cert-track" id="certTrack"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATE LIGHTBOX -->
+  <div class="cert-lightbox" id="certLightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button class="cert-lightbox-close" id="certLightboxClose" aria-label="Close certificate view" type="button">&times;</button>
+    <!-- Dynamic content container: will hold either an <img> or an <object> for PDFs -->
+    <div id="certLightboxContent" style="max-width:min(90vw, 760px); max-height:74vh; width:auto; height:auto;"></div>
+    <div class="cert-lightbox-caption mono" id="certLightboxCaption"></div>
+  </div>
+
+  <!-- SHEET 02 : EXPERIENCE -->
+  <section class="sheet" id="sheet-02">
+    <div class="sheet-frame">
+      <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+      <span class="sheet-watermark">02</span>
+      <div class="sheet-header">
+        <span class="tick"></span><span class="line"></span>
+        <h2>Work Experience</h2>
+        <span class="line"></span><span class="tag">REVISION HISTORY</span>
+      </div>
+
+      <div class="exp-row">
+        <div class="exp-rev">C</div>
+        <div>
+          <div class="exp-role">Teaching &amp; Lab Assistant — Mechanical Engineering</div>
+          <div class="exp-org mono">Bannari Amman Institute of Technology, India</div>
+          <p class="exp-desc">Assisted faculty delivering Engineering Graphics, Structural Analysis, and CAD/ANSYS labs for 60+ undergraduates. Ran mechanical-manufacturing lab operations, including CNC and 3D-printing equipment, and wrote lab documentation the department later adopted.</p>
+        </div>
+        <div class="exp-date">MAR – MAY 2024</div>
+      </div>
+
+      <div class="exp-row">
+        <div class="exp-rev">B</div>
+        <div>
+          <div class="exp-role">CAD &amp; Product Design Intern</div>
+          <div class="exp-org mono">Ether Infotech, India</div>
+          <p class="exp-desc">Produced production-ready 3D models and assemblies in CATIA and SolidWorks across product development projects. Authored GD&amp;T documentation and modification logs, standardizing drafting workflows to cut design-review cycle time.</p>
+        </div>
+        <div class="exp-date">AUG 2023 – JAN 2024</div>
+      </div>
+
+      <div class="exp-row">
+        <div class="exp-rev">A</div>
+        <div>
+          <div class="exp-role">Manufacturing Intern</div>
+          <div class="exp-org mono">Roots Industries India Limited, India</div>
+          <p class="exp-desc">Worked production of sheet-metal horn diaphragms and brackets plus aluminium die-casting of horn housings, tracing material flow from raw stock to finished assembly with full BOM traceability. Documented tooling parameters for intern training materials.</p>
+        </div>
+        <div class="exp-date">DEC 2020 – JAN 2021</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 03 : EDUCATION -->
+  <section class="sheet" id="sheet-03">
+    <div class="sheet-frame">
+      <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+      <span class="sheet-watermark">03</span>
+      <div class="sheet-header">
+        <span class="tick"></span><span class="line"></span>
+        <h2>Education</h2>
+        <span class="line"></span><span class="tag">2 RECORDS</span>
+      </div>
+
+      <div class="edu-grid">
+        <div class="edu-card">
+          <h3>M.S. Aerospace &amp; Mechanical Engineering</h3>
+          <div class="edu-org">Saint Louis University, St. Louis, MO</div>
+          <div class="edu-courses">
+            <span class="tag">Turbomachinery</span><span class="tag">CFD</span><span class="tag">Modern Control Systems</span>
+            <span class="tag">Robotic Manipulators</span><span class="tag">Space Mission Analysis &amp; Design</span>
+            <span class="tag">Sustainable Engineering</span><span class="tag">ML for Thermal Fluids</span><span class="tag">UAS</span>
+          </div>
+          <div class="edu-meta"><span>AUG 2024 – MAY 2026</span><span>GPA 3.61 / 4.0</span></div>
+        </div>
+
+        <div class="edu-card">
+          <h3>B.E. Aeronautical Engineering</h3>
+          <div class="edu-org">Bannari Amman Institute of Technology, Sathyamangalam, India</div>
+          <div class="edu-courses">
+            <span class="tag">Aerodynamics</span><span class="tag">Aircraft Structures</span><span class="tag">Propulsion</span>
+          </div>
+          <div class="edu-meta"><span>AUG 2019 – MAY 2023</span><span>GPA 3.21 / 4.0</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 04 : SKILLS -->
+  <section class="sheet" id="sheet-04">
+    <div class="sheet-frame">
+      <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+      <span class="sheet-watermark">04</span>
+      <div class="sheet-header">
+        <span class="tick"></span><span class="line"></span>
+        <h2>Skills &amp; Tooling</h2>
+        <span class="line"></span><span class="tag">SCALE N.T.S.</span>
+      </div>
+
+      <div class="skill-group">
+        <h3>Robotics &amp; Control</h3>
+        <div class="skill-chips">
+          <span class="skill-chip">ROS2 (Humble, Jazzy)</span><span class="skill-chip">Gazebo</span><span class="skill-chip">RViz</span>
+          <span class="skill-chip">URDF</span><span class="skill-chip">ros2_control</span><span class="skill-chip">TF2</span>
+          <span class="skill-chip">PID</span><span class="skill-chip">LQR</span><span class="skill-chip">EKF / UKF</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Simulation &amp; Analysis</h3>
+        <div class="skill-chips">
+          <span class="skill-chip">ANSYS Fluent (CFD)</span><span class="skill-chip">ANSYS Structural (FEA)</span>
+          <span class="skill-chip">MATLAB</span><span class="skill-chip">Simulink</span><span class="skill-chip">XFLR5</span><span class="skill-chip">Blender</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>CAD &amp; Prototyping</h3>
+        <div class="skill-chips">
+          <span class="skill-chip">CATIA</span><span class="skill-chip">SolidWorks</span><span class="skill-chip">NX CAD</span>
+          <span class="skill-chip">Fusion 360</span><span class="skill-chip">AutoCAD</span><span class="skill-chip">3D Printing</span><span class="skill-chip">CNC Machining</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Programming &amp; Embedded</h3>
+        <div class="skill-chips">
+          <span class="skill-chip">Python</span><span class="skill-chip">C++</span><span class="skill-chip">Git / GitHub</span><span class="skill-chip">Raspberry Pi</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Core Competencies</h3>
+        <div class="skill-chips">
+          <span class="skill-chip">CAM</span><span class="skill-chip">DFM</span><span class="skill-chip">BOM</span>
+          <span class="skill-chip">Inverse Kinematics &amp; Dynamics</span><span class="skill-chip">State-Space Modeling</span>
+          <span class="skill-chip">Observer Design</span><span class="skill-chip">CFD Automation</span><span class="skill-chip">UAV Aerodynamics</span>
+          <span class="skill-chip">FMEA</span><span class="skill-chip">Lifecycle Optimization</span><span class="skill-chip">Turbomachinery</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 05 : PUBLICATIONS -->
+  <section class="sheet" id="sheet-05">
+    <div class="sheet-frame">
+      <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+      <span class="sheet-watermark">05</span>
+      <div class="sheet-header">
+        <span class="tick"></span><span class="line"></span>
+        <h2>Publications &amp; Achievements</h2>
+        <span class="line"></span><span class="tag">1 PUBLICATION · 4 ENTRIES</span>
+      </div>
+
+      <h3 class="skill-group h3" style="font-family:var(--font-mono); font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px;">Journal Publication</h3>
+      <div class="pub-block">
+        <p>
+          <a class="pub-link" href="https://www.researchgate.net/publication/347929478_Flow_conditions_analysis_of_Gas_Turbine_Combustor" target="_blank" rel="noopener noreferrer">
+            Flow condition analysis of a gas turbine combustor, examining how inlet flow behavior shapes combustion performance.
+            <span class="pub-action">View publication</span>
+          </a>
+        </p>
+        <div class="pub-meta">IOP CONFERENCE SERIES: MATERIALS SCIENCE AND ENGINEERING · VOL. 995 · ICMEEP 2020 · OCT 2020</div>
+      </div>
+
+      <h3 style="font-family:var(--font-mono); font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px;">Academic Competitions</h3>
+      <ul class="ach-list">
+        <li><span class="ach-code">C-01</span><span>SAE India Aero Design Challenge 2021 (Micro Class) — engineered a lightweight fixed-wing RC aircraft on a custom flying-wing layout, optimized for payload-to-weight and lift-to-drag ratio.</span></li>
+        <li><span class="ach-code">C-02</span><span>Model Aircraft Design Challenge 1.0, 2022 (Sri Ramakrishna Engineering College) — RC aircraft design and fabrication.</span></li>
+        <li><span class="ach-code">C-03</span><span>Comparative aerodynamic study of multi-blade vs. three-blade wind turbines using a modified base-bleed technique, improving rotational efficiency (Apr 2023).</span></li>
+        <li><span class="ach-code">C-04</span><span>Aerodynamic optimization of quadcopter blades across bi-blade, tri-blade, and ducted geometries — the ducted design achieved the highest thrust-to-weight ratio (Nov 2022).</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SHEET 06 : PROJECTS -->
+  <section class="sheet" id="sheet-06">
+    <div class="sheet-frame">
+      <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+      <span class="sheet-watermark">06</span>
+      <div class="sheet-header">
+        <span class="tick"></span><span class="line"></span>
+        <h2>Projects &amp; Research</h2>
+        <span class="line"></span><span class="tag">4 ASSEMBLIES</span>
+      </div>
+
+      <div class="project-grid">
+        <div class="project-card">
+          <span class="project-id">PRJ-01 · ROBOTICS</span>
+          <h3>ROS2 Jacobian-Based Velocity Control — PX-100 Arm</h3>
+          <p class="project-sub">Real-time twist estimation validated against ground-truth kinematics.</p>
+          <ul>
+            <li>Built a real-time end-effector twist estimation and velocity control system, validating analytic Jacobians against TF2 ground truth with sub-millimeter accuracy under normal operating conditions.</li>
+            <li>Wrote a custom control node for forward kinematics and numerical differentiation, then mapped out singularity-region behavior to set safe operating limits.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">ROS2 Humble</span><span class="tag">TF2</span><span class="tag">Python</span></div>
+        </div>
+
+        <div class="project-card">
+          <span class="project-id">PRJ-02 · CONTROLS</span>
+          <h3>Advanced Control System Design &amp; State Estimation</h3>
+          <p class="project-sub">Full-state feedback and observer design for an unstable system.</p>
+          <ul>
+            <li>Designed full state-feedback control and a Luenberger observer for an unstable dynamic system in MATLAB/Simulink, hitting the target settling time with under 5% overshoot through pole placement.</li>
+            <li>Verified controllability and observability analytically, then confirmed observer-controller integration across multiple simulated conditions with convergent error dynamics.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">MATLAB</span><span class="tag">Simulink</span><span class="tag">State-Space</span></div>
+        </div>
+
+        <div class="project-card">
+          <span class="project-id">PRJ-03 · THERMAL/CFD</span>
+          <h3>Thermal Optimization of Heat Exchangers</h3>
+          <p class="project-sub">Turbine-blade-inspired geometry validated through coupled CFD/FEA.</p>
+          <ul>
+            <li>Designed a turbine-blade-inspired heat exchanger using rib-turbulation channels, then ran coupled CFD and structural validation in ANSYS Fluent and ANSYS Structural.</li>
+            <li>Improved the heat-transfer coefficient measurably while keeping structural reliability margins intact at elevated operating temperatures.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">ANSYS Fluent</span><span class="tag">ANSYS Structural</span></div>
+        </div>
+
+        <div class="project-card">
+          <span class="project-id">PRJ-04 · ORBITAL</span>
+          <h3>Satellite Orbit Control &amp; Communication Link Analysis</h3>
+          <p class="project-sub">Multi-spacecraft mission design in a digital-twin environment.</p>
+          <ul>
+            <li>Simulated a multi-spacecraft DiskSat mission in Sedaro, designing relay and science orbits along with stationkeeping strategy and ground-station visibility windows.</li>
+            <li>Evaluated end-to-end communication performance (SNR, link margin), flagged downlink bottlenecks, and proposed relay-orbit geometry improvements.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">Sedaro</span><span class="tag">Orbit Design</span><span class="tag">Link Budget</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 07 : CONTACT -->
+  <section class="sheet" id="sheet-07">
+    <div class="sheet-frame">
+      <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+      <span class="sheet-watermark">07</span>
+      <div class="sheet-header">
+        <span class="tick"></span><span class="line"></span>
+        <h2>Contact</h2>
+        <span class="line"></span><span class="tag">SIGN-OFF</span>
+      </div>
+
+      <div class="contact-cta">
+        <h2 class="big">Let's build something that's been validated, not just rendered.</h2>
+        <p class="lede">Open to full-time roles in mechanical design, robotics, and simulation engineering. Reach out directly — I respond fast.</p>
+        <div class="contact-row">
+          <a class="chip" href="mailto:daksh.balus@gmail.com">daksh.balus@gmail.com</a>
+          <span class="chip">+1 (557) 213-2921</span>
+          <span class="chip">St. Louis, MO</span>
+          <a class="chip" href="https://www.linkedin.com/in/dakshinamurthy-balusamy-9576a7210" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+          <a class="chip" href="https://github.com/dakshbalus-cmd" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        </div>
+
+        <div class="footer-note">
+          <span>DOC NO. DB-2026-EM</span>
+          <span>DRAWN BY D. BALUSAMY</span>
+          <span>REV A · JUN 2026</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="title-block" id="titleBlock">
+  <div class="tb-row"><span>DOC</span><span class="tb-strong">DB-2026-EM</span></div>
+  <div class="tb-row"><span>SHEET</span><span class="tb-strong" id="tbSheet">01 OF 07</span></div>
+  <div class="tb-row"><span>SCALE</span><span class="tb-strong">N.T.S.</span></div>
+  <div class="tb-row"><span>REV</span><span class="tb-strong">A</span></div>
+</div>
+
+<script>
+  /* ═══════════════════════════════════════════════════════════════════════════════
+     JAVASCRIPT — Portfolio Interactivity
+     
+     This section handles:
+     1. Mobile navigation toggle
+     2. Scroll-based animation reveal (fade-in as you scroll)
+     3. Active nav link highlighting (syncs with current section)
+     4. Title block updates (bottom-right sheet number tracker)
+     5. SVG pen-plotter draw animation (hero diagram)
+     6. Certificate carousel (infinitely scrolling)
+     7. Certificate lightbox viewer
+     ═══════════════════════════════════════════════════════════════════════════════ */
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MOBILE NAVIGATION TOGGLE
+  // ─────────────────────────────────────────────────────────────────────────────
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  // Close menu when a link is clicked
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // ANIMATION PREFERENCES
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Check if user prefers reduced motion (accessibility)
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // SCROLL REVEAL + NAVIGATION SYNC + TITLE BLOCK UPDATE
+  // ─────────────────────────────────────────────────────────────────────────────
+  const sheets = document.querySelectorAll('.sheet');
+  const spyTargets = document.querySelectorAll('.sheet, .cert-strip');
+  const navAnchors = document.querySelectorAll('.nav-links a');
+  const tbSheet = document.getElementById('tbSheet');
+
+  // Observer 1: Fade in sheets as they enter viewport
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('in-view');
+    });
+  }, { threshold: 0.12 }); // Trigger when 12% of element is visible
+  sheets.forEach(s => revealObserver.observe(s));
+
+  // Observer 2: Update active nav link & title block based on scroll position
+  const spyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        // Update title block sheet number (e.g., "01 OF 07", "02 OF 07")
+        if (id.startsWith('sheet-')) {
+          const num = id.split('-')[1];
+          tbSheet.textContent = num + ' OF 07';
+        }
+        // Highlight corresponding nav link
+        navAnchors.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  spyTargets.forEach(s => spyObserver.observe(s));
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // SVG PEN-PLOTTER ANIMATION
+  // ─────────────────────────────────────────────────────────────────────────────
+  // The hero diagram draws itself when the page loads (stroke-dasharray animation)
+  window.addEventListener('load', () => {
+    const paths = document.querySelectorAll('.hero-svg .draw-path');
+    paths.forEach((el, i) => {
+      let len = 40;
+      try {
+        if (typeof el.getTotalLength === 'function') len = el.getTotalLength();
+      } catch (e) {}
+      if (reduceMotion) {
+        el.style.strokeDasharray = 'none';
+        return;
+      }
+      el.style.strokeDasharray = len;
+      el.style.strokeDashoffset = len;
+      el.style.transition = 'stroke-dashoffset 1.1s ease ' + (i * 0.05) + 's';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { el.style.strokeDashoffset = 0; });
+      });
+    });
+  });
+
+  /* ═══════════════════════════════════════════════════════════════════════════════
+     CERTIFICATES CAROUSEL
+     
+     TO ADD A CERTIFICATE:
+     1. Add an object to the CERTIFICATIONS array below
+     2. If you have an image file, add 'image' property with file path
+     3. If no image, a placeholder card is auto-generated
+     
+     Example:
+     { title: 'Your Cert Name', issuer: 'Organization', date: '2025',
+       image: 'path/to/image.jpg' }
+     ═══════════════════════════════════════════════════════════════════════════════ */
+
+  // EDIT HERE: Add or remove certificates (use image files, NOT PDFs)
+  const CERTIFICATIONS = [
+    { title: 'NX Design Associate', issuer: 'Siemens', date: '2026' },
+    { title: 'MATLAB On-Ramp', issuer: 'MathWorks', date: '2026', image: 'All Files/COURSES/Matlab On-ramp Certificate.png', full: 'All Files/COURSES/Matlab On-ramp Certificate.png' },
+    { title: 'ANSYS Fluent — CFD', issuer: 'ANSYS Innovation Courses', date: '2025' },
+    { title: 'Lean Six Sigma — White Belt', issuer: 'Alison', date: '2025', image: 'All Files/COURSES/LEAN 6 SIGMA/WHITE BELT/White-Belt-Dakshinamurthy-Balusamy.png' },
+    { title: 'ANSYS Mechanical — FEA', issuer: 'ANSYS Innovation Courses', date: '2025' },
+  ];
+
+  // Generate a placeholder certificate card (SVG) if no image provided
+  function certPlaceholder(title, issuer, date) {
+    const safe = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 220'>
+      <rect x='1' y='1' width='318' height='218' fill='#EFF2EB' stroke='#8C9890' stroke-width='1'/>
+      <rect x='14' y='14' width='292' height='192' fill='none' stroke='#B7C2B4' stroke-width='1' stroke-dasharray='3 3'/>
+      <circle cx='46' cy='46' r='14' fill='none' stroke='#2C5A86' stroke-width='1.6'/>
+      <circle cx='46' cy='46' r='4' fill='#2C5A86'/>
+      <line x1='46' y1='28' x2='46' y2='34' stroke='#2C5A86' stroke-width='1.4'/>
+      <line x1='46' y1='58' x2='46' y2='64' stroke='#2C5A86' stroke-width='1.4'/>
+      <line x1='28' y1='46' x2='34' y2='46' stroke='#2C5A86' stroke-width='1.4'/>
+      <line x1='58' y1='46' x2='64' y2='46' stroke='#2C5A86' stroke-width='1.4'/>
+      <text x='72' y='42' font-family='IBM Plex Mono, monospace' font-size='10' letter-spacing='1.5' fill='#8B968F'>CERTIFICATE</text>
+      <text x='30' y='110' font-family='Space Grotesk, sans-serif' font-weight='600' font-size='19' fill='#1C2A2A'>${safe(title)}</text>
+      <text x='30' y='136' font-family='IBM Plex Mono, monospace' font-size='12' fill='#56635F'>${safe(issuer)}</text>
+      <text x='30' y='190' font-family='IBM Plex Mono, monospace' font-size='10' letter-spacing='1' fill='#8B968F'>${safe(date)}</text>
+    </svg>`;
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+
+  // Build certificate carousel
+  const certTrack = document.getElementById('certTrack');
+  const certLightbox = document.getElementById('certLightbox');
+  // Dynamic content container (may hold <img> or <object> for PDFs)
+  const certLightboxContent = document.getElementById('certLightboxContent');
+  const certLightboxCaption = document.getElementById('certLightboxCaption');
+  const certLightboxClose = document.getElementById('certLightboxClose');
+
+  // Open certificate in lightbox
+  function openCertLightbox(src, caption) {
+    console.log('openCertLightbox called', src, caption);
+    certLightboxContent.innerHTML = '';
+    certLightbox.classList.remove('open');
+    certLightbox.style.display = 'flex';
+    certLightbox.style.visibility = 'visible';
+    certLightbox.style.opacity = '0';
+    certLightbox.style.transform = 'scale(0.84)';
+
+    const isPDF = String(src).toLowerCase().endsWith('.pdf');
+    if (isPDF) {
+      const obj = document.createElement('object');
+      obj.data = encodeURI(src);
+      obj.type = 'application/pdf';
+      obj.style.width = '100%';
+      obj.style.height = '74vh';
+      obj.style.background = '#fff';
+      certLightboxContent.appendChild(obj);
+    } else {
+      const img = document.createElement('img');
+      img.src = encodeURI(src);
+      img.alt = caption;
+      img.style.maxWidth = '90vw';
+      img.style.maxHeight = '74vh';
+      img.style.width = 'auto';
+      img.style.height = 'auto';
+      img.style.objectFit = 'contain';
+      img.style.background = '#fff';
+      certLightboxContent.appendChild(img);
+    }
+    certLightboxCaption.textContent = caption;
+    setTimeout(() => {
+      certLightbox.classList.add('open');
+    }, 90);
+    certLightbox.setAttribute('aria-hidden', 'false');
+    certLightboxClose.focus();
+  }
+  // Close lightbox
+  function closeCertLightbox() {
+    certLightbox.classList.remove('open');
+    certLightbox.setAttribute('aria-hidden', 'true');
+    const cleanup = (event) => {
+      if (event.propertyName === 'opacity') {
+        certLightbox.style.display = 'none';
+        certLightbox.style.visibility = 'hidden';
+        certLightboxContent.innerHTML = '';
+        certLightbox.removeEventListener('transitionend', cleanup);
+      }
+    };
+    certLightbox.addEventListener('transitionend', cleanup);
+  }
+
+  // Create a single certificate item anchor
+  function buildCertItem(cert) {
+    const thumb = cert.image || certPlaceholder(cert.title, cert.issuer, cert.date);
+    const full = cert.full || cert.image || certPlaceholder(cert.title, cert.issuer, cert.date);
+    const caption = cert.title + ' — ' + cert.issuer + ' · ' + cert.date;
+
+    const btn = document.createElement('a');
+    btn.className = 'cert-item';
+    btn.href = encodeURI(full);
+    btn.dataset.caption = caption;
+    btn.setAttribute('aria-label', 'View certificate: ' + caption);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openCertLightbox(full, caption);
+    });
+
+    // Render a preview: use <img> for images, <object> for PDFs
+    const isPDFThumb = String(thumb).toLowerCase().endsWith('.pdf');
+    const CERT_WIDTH = 120; // fixed thumbnail width (px)
+    const MIN_HEIGHT = 56;
+    const MAX_HEIGHT = 300;
+    // Create a wrapper that centers the thumbnail; label remains below
+    const thumbWrap = document.createElement('div');
+    thumbWrap.className = 'cert-thumb';
+
+    if (isPDFThumb) {
+      const obj = document.createElement('object');
+      obj.data = encodeURI(thumb);
+      obj.type = 'application/pdf';
+      obj.style.width = '100%';
+      // give PDFs a default height proportional to width (landscape PDFs typically)
+      obj.style.height = Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, Math.round(CERT_WIDTH * 0.66))) + 'px';
+      obj.style.display = 'block';
+      // Fallback: placeholder image if object fails
+      const fallback = document.createElement('img');
+      fallback.src = certPlaceholder(cert.title, cert.issuer, cert.date);
+      fallback.alt = caption;
+      fallback.loading = 'lazy';
+      fallback.style.width = '100%';
+      fallback.style.height = 'auto';
+      obj.appendChild(fallback);
+      thumbWrap.appendChild(obj);
+    } else {
+      const img = document.createElement('img');
+      img.src = encodeURI(thumb);
+      img.alt = caption;
+      img.loading = 'lazy';
+      // Temporarily set width; height will be adjusted after natural size is known
+      img.style.width = '100%';
+      img.style.height = 'auto';
+      thumbWrap.appendChild(img);
+
+      // Compute and set a height for the thumbnail based on image aspect ratio
+      const temp = new Image();
+      temp.onload = function() {
+        const aspect = temp.naturalHeight / temp.naturalWidth;
+        const desiredH = Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, Math.round(CERT_WIDTH * aspect)));
+        // set image height and allow the container to size to content
+        img.style.height = desiredH + 'px';
+      };
+      temp.onerror = function() {
+        // on error, leave default minimal height
+        img.style.height = MIN_HEIGHT + 'px';
+      };
+      temp.src = encodeURI(thumb);
+    }
+
+    // Append thumbnail wrapper and then add certificate name below
+    btn.appendChild(thumbWrap);
+
+    const name = document.createElement('div');
+    name.className = 'cert-item-name';
+    name.textContent = cert.title;
+    name.title = cert.title;  // Show full name on hover tooltip
+    btn.appendChild(name);
+
+    return btn;
+  }
+
+  // Initialize carousel if we have certificates
+  if (certTrack && CERTIFICATIONS.length) {
+    // Add certificates to track (only once, no duplication)
+    CERTIFICATIONS.forEach(cert => certTrack.appendChild(buildCertItem(cert)));
+
+    // Calculate animation duration based on number of certificates
+    const SECONDS_PER_ITEM = 4.5; // How long each cert stays visible
+    const MIN_DURATION = 14;      // Minimum scroll time
+    const duration = Math.max(MIN_DURATION, CERTIFICATIONS.length * SECONDS_PER_ITEM);
+    certTrack.style.setProperty('--cert-duration', duration + 's');
+
+      // Click close button
+    certLightboxClose.addEventListener('click', closeCertLightbox);
+    // Click outside image to close
+    certLightbox.addEventListener('click', (e) => {
+      if (e.target === certLightbox) closeCertLightbox();
+    });
+    // Press Escape to close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && certLightbox.classList.contains('open')) closeCertLightbox();
+    });
+  }
+</script>
+
 </body>
 </html>
